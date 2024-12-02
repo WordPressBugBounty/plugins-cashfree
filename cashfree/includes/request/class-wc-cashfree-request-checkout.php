@@ -63,15 +63,30 @@ class WC_Cashfree_Request_Checkout {
 				'billing_address'	=> $billing_address['billingAddress'],
 				'pincode'      		=> $postCode,
 				'cart_items'           	=> array_map(
-					function( $item ) use ( $order ) {
-						return WC_Cashfree_Request_Item::build( $order, $item );
+					function( $item ) {
+						return WC_Cashfree_Request_Item::build( $item );
 					},
 					array_values( $order->get_items() )
 				)
 			)
 		);
-
 		return $data;
+	}
+
+	private static function get_valid_cart_items( $order ) {
+		$filtered_items = array_filter(
+			$order->get_items(),
+			function( $item ) {
+				return $item->get_product(); // Only include valid products
+			}
+		);
+	
+		return array_map(
+			function( $item ) use ( $order ) {
+				return WC_Cashfree_Request_Item::build( $order, $item );
+			},
+			$filtered_items
+		);
 	}
 
 	/**

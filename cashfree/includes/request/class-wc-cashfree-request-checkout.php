@@ -70,23 +70,8 @@ class WC_Cashfree_Request_Checkout {
 				)
 			)
 		);
-		return $data;
-	}
 
-	private static function get_valid_cart_items( $order ) {
-		$filtered_items = array_filter(
-			$order->get_items(),
-			function( $item ) {
-				return $item->get_product(); // Only include valid products
-			}
-		);
-	
-		return array_map(
-			function( $item ) use ( $order ) {
-				return WC_Cashfree_Request_Item::build( $order, $item );
-			},
-			$filtered_items
-		);
+		return $data;
 	}
 
 	/**
@@ -194,6 +179,8 @@ class WC_Cashfree_Request_Checkout {
 	}
 
 	public static function cfConvertToNumber($input) {
-		return (float) str_replace(',', '', $input);
+		$amount = (float) str_replace(',', '', $input);
+		$amount = number_format($amount, 2, '.', '');
+		return $amount;
 	}
 }
